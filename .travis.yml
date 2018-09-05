@@ -1,0 +1,11 @@
+language: php
+dist: trusty
+php:
+- 7.1
+- 7.2
+install:
+- travis_retry composer install --no-interaction
+- cp phpunit.dist.xml phpunit.xml
+
+script:
+- vendor/bin/phpunit
