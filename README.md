@@ -246,10 +246,10 @@ $collection = collect([
 
 ### Why no datetime converter?
 
-Currently I feel this should be implemented by the user and not
-about of the library, in part because of how some developers only use
-`datetime` classes while others would use additional packages like
-Carbon or Chronos. I'm open to ideas for this as it makes sense. I just
+Currently we feel this should be implemented by the user and not
+apart of the library due to how some developers only use
+`datetime` while others would use additional packages like
+Carbon or Chronos. We're open to ideas for this as it makes sense. We just
 don't want to put forward something that requires a breaking change
 early on.
 
