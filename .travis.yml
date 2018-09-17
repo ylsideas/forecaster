@@ -5,7 +5,6 @@ php:
 - 7.2
 install:
 - travis_retry composer install --no-interaction
-- cp phpunit.dist.xml phpunit.xml
 
 script:
 - vendor/bin/phpunit
