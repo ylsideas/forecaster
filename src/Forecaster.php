@@ -142,27 +142,37 @@ class Forecaster
     }
 
     /**
-     * @return array
+     * @param string|Closure $class
+     * @return array|object
+     * @throws ErrorException
      */
-    public function get()
+    public function get($class = null)
     {
+        if (is_callable($class)) {
+            return $class($this->processed);
+        } elseif (class_exists($class)) {
+            return new $class($this->processed);
+        } elseif ($class === 'object') {
+            return (object) $this->processed;
+        }
+
+        if ($class !== null) {
+            throw new ErrorException("Class [$class] could not be resolved");
+        }
+
         return $this->processed;
     }
 
     /**
+     * @deprecated
+     *
      * @param string|Closure $class
      * @return mixed
      * @throws ErrorException
      */
     public function into($class)
     {
-        if (is_callable($class)) {
-            return $class($this->processed);
-        } elseif (class_exists($class)) {
-            return new $class($this->processed);
-        }
-
-        throw new ErrorException("Class [$class] could not be resolved");
+        return $this->get($class);
     }
 
     /**
