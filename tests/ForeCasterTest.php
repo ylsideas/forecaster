@@ -33,6 +33,7 @@ class ForecasterTest extends TestCase
      * @param string $type
      * @param string $processedField
      * @param mixed $expected
+     * @throws \ErrorException
      */
     public function test_it_can_convert_primitive_fields($field, $value, $type, $processedField, $expected)
     {
@@ -135,7 +136,7 @@ class ForecasterTest extends TestCase
         $this->assertSame(['1', '2' , '3'], $processed['output']);
     }
 
-    public function test_it_can_convert_the_processed_into_a_type_of_class()
+    public function test_it_can_convert_the_processed_into_a_type_of_class_using_into()
     {
         /** @var TestableCastIntoClass $object */
         $object = Forecaster::make([
@@ -148,6 +149,32 @@ class ForecasterTest extends TestCase
         $this->assertSame(10, $object->getItem()['output']);
     }
 
+    public function test_it_can_convert_the_processed_into_a_std_object()
+    {
+        /** @var \stdClass $object */
+        $object = Forecaster::make([
+            'test' => '10',
+        ])
+            ->cast('test', 'output', 'int')
+            ->get('object');
+
+        $this->assertObjectHasAttribute('output', $object);
+        $this->assertSame(10, $object->output);
+    }
+
+    public function test_it_can_convert_the_processed_into_a_type_of_class()
+    {
+        /** @var TestableCastIntoClass $object */
+        $object = Forecaster::make([
+            'test' => '10',
+        ])
+            ->cast('test', 'output', 'int')
+            ->get(TestableCastIntoClass::class);
+
+        $this->assertArrayHasKey('output', $object->getItem());
+        $this->assertSame(10, $object->getItem()['output']);
+    }
+
     public function test_it_can_convert_the_processed_into_a_type_of_class_from_closure()
     {
         /** @var TestableCastIntoClass $object */
@@ -155,7 +182,7 @@ class ForecasterTest extends TestCase
             'test' => '10',
         ])
             ->cast('test', 'output', 'int')
-            ->into(function ($processed) {
+            ->get(function ($processed) {
                 return new TestableCastIntoClass($processed);
             });
 
