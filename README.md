@@ -242,6 +242,22 @@ $collection = collect([
 ]
 ```
 
+This macro also lets you specify the outcome of the forecast if you want to
+transform each of them into a particular class or an stdObject.
+
+```php
+$collection = collect([
+    ['test' => '123.456'],
+    ['test' => '789.101112']
+])
+    ->forecast(
+        function (Forecaster $forecast) {
+            $forecast->cast('test', 'output', 'float');
+        }, 
+        'object'
+    );
+```
+
 ## FAQ
 
 ### Why no datetime converter?
