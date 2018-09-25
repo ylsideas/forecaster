@@ -61,6 +61,19 @@ class ForecasterTest extends TestCase
         ];
     }
 
+    public function test_it_can_convert_objects()
+    {
+        $object = new \stdClass();
+        $object->test = '10';
+
+        $processed = Forecaster::make($object)
+            ->cast('test', 'output', 'int')
+            ->get();
+
+        $this->assertArrayHasKey('output', $processed);
+        $this->assertSame(10, $processed['output']);
+    }
+    
     public function test_it_can_register_custom_transformers()
     {
         $processed = Forecaster::make([

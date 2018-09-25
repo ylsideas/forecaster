@@ -100,17 +100,17 @@ class Forecaster
         $value = null;
 
         if ($type === null) {
-            $value = Arr::get($this->item, $field);
+            $value = data_get($this->item, $field);
         } elseif (is_string($type) && in_array($type, self::$transformers)) {
             $value = $this->castPrimitives(
                 $type,
-                Arr::get($this->item, $field)
+                data_get($this->item, $field)
             );
         } elseif (is_string($type) && key_exists($type, self::$customTransformers)) {
             $transformer = self::$customTransformers[$type];
-            $value = $transformer(Arr::get($this->item, $field));
+            $value = $transformer(data_get($this->item, $field));
         } elseif (is_callable($type)) {
-            $value = $type(Arr::get($this->item, $field));
+            $value = $type(data_get($this->item, $field));
         } elseif ($type instanceof CastingTransformer) {
             $value = $type->cast($field, $processedField, $this->item, $this->processed);
         }
