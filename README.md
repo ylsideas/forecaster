@@ -256,8 +256,9 @@ early on.
 ## Testing
 
 Testing for this package is done using PHPUnit. You can run this from
-the composer dependencies. Running `vendor/bin/phpunit`. Make sure to copy
-`phpunit.dist.xml` to `phpunit.xml` first.
+the composer dependencies. Running `vendor/bin/phpunit` will execute phpunit.xml.dist
+but you may copy it to phpunit.xml if you wish to change it for your own
+testing but please do not commit your version of phpunit.xml as part of any PR.
 
 ## Contributing
 
