@@ -2,10 +2,9 @@
 
 Forecaster is a library for manipulating and casting associative arrays in PHP.
 
-While the project makes use of the `Arr` helper class and provides a macro for
-the `Collection` class from Laravel it can be used in non-Laravel projects as it only depends
-upon [Tighten Co's Collect package](https://github.com/tightenco/collect)
-and not the Laravel Support package meaning it's compatible with any framework or project.
+While the project makes use of a class and helpers found in Laravel it can be used in non-Laravel
+projects as it only depends upon the [Tighten Co's Collect package](https://github.com/tightenco/collect)
+and not the Laravel Support package meaning it's compatible with any framework or stand-alone project.
 
 ## Installation
 
@@ -73,6 +72,26 @@ $result = forecast([
             'to' => true,
         ]
     ]
+]               
+```
+
+You need not use just arrays, you may also use an object or a mix
+of objects and arrays with the same dot notation.
+
+```php
+$object = new stdClass();
+$object->objField = [
+    'arrField' => '10',
+];
+
+$result = forecast($object)
+    ->cast('objField.arrField', 'my_field', 'int')
+    ->get();
+    
+// results to
+
+[
+    'my_field' => 10,
 ]               
 ```
 
@@ -196,14 +215,25 @@ $processed = Forecaster::make([
 ### Cast Into objects
 
 If you're rather turn the result into an object of your choice you
-can using the into method.
+can provide a class string to the get method.
 
 ```php
 $results = forecast([
     'test' => '10',
 ])
     ->cast('test', 'output')
-    ->into(SomeClass::class);
+    ->get(SomeClass::class);
+```
+
+You can also provide the string `object` as a parameter which will
+instruct the forecaster instance to cast the array into a stdClass object.
+
+```php
+$object = forecast([
+    'test' => '10',
+])
+    ->cast('test', 'output')
+    ->get('object');
 ```
 
 There is also the option to resolve this using a function.
@@ -213,7 +243,7 @@ $results = forecast([
     'test' => '10',
 ])
     ->cast('test', 'output')
-    ->into(function ($processed) {
+    ->get(function ($processed) {
         return new SomeClass($processed['output']);
     });
 ```
