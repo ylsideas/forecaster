@@ -97,28 +97,42 @@ class Forecaster
      */
     public function cast(string $field, string $processedField, $type = null)
     {
-        $value = null;
-
-        if ($type === null) {
-            $value = data_get($this->item, $field);
-        } elseif (is_string($type) && in_array($type, self::$transformers)) {
-            $value = $this->castPrimitives(
-                $type,
-                data_get($this->item, $field)
-            );
-        } elseif (is_string($type) && key_exists($type, self::$customTransformers)) {
-            $transformer = self::$customTransformers[$type];
-            $value = $transformer(data_get($this->item, $field));
-        } elseif (is_callable($type)) {
-            $value = $type(data_get($this->item, $field));
-        } elseif ($type instanceof CastingTransformer) {
-            $value = $type->cast($field, $processedField, $this->item, $this->processed);
-        }
+        $value = $this->castValue(data_get($this->item, $field), $field, $processedField, $type);
 
         Arr::set(
             $this->processed,
             $processedField,
             $value
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     * @param string $processedField
+     * @param null|string|Closure|CastingTransformer $type
+     * @return $this
+     * @throws ErrorException
+     */
+    public function castAll(string $field, string $processedField, $type = null)
+    {
+        $itemData = data_get($this->item, $field);
+
+        if (! is_array($itemData)) {
+            throw new ErrorException("Field [$field] does not provide an array");
+        }
+
+        $data = collect($itemData)
+            ->map(function ($item) use ($field, $processedField, $type) {
+                return $this->castValue($item, $field, $processedField, $type);
+            })
+            ->toArray();
+
+        Arr::set(
+            $this->processed,
+            $processedField,
+            $data
         );
 
         return $this;
@@ -173,6 +187,36 @@ class Forecaster
     public function into($class)
     {
         return $this->get($class);
+    }
+
+    /**
+     * @param mixed $data
+     * @param string $field
+     * @param string $processedField
+     * @param null|string|Closure|CastingTransformer $type
+     * @return bool|float|int|mixed|null|string
+     */
+    protected function castValue($data, $field, $processedField, $type = null)
+    {
+        $value = null;
+
+        if ($type === null) {
+            $value = $data;
+        } elseif (is_string($type) && in_array($type, self::$transformers)) {
+            $value = $this->castPrimitives(
+                $type,
+                $data
+            );
+        } elseif (is_string($type) && key_exists($type, self::$customTransformers)) {
+            $transformer = self::$customTransformers[$type];
+            $value = $transformer($data);
+        } elseif (is_callable($type)) {
+            $value = $type($data);
+        } elseif ($type instanceof CastingTransformer) {
+            $value = $type->cast($field, $processedField, $this->item, $this->processed);
+        }
+
+        return $value;
     }
 
     /**
