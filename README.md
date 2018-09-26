@@ -95,6 +95,32 @@ $result = forecast($object)
 ]               
 ```
 
+Manipulating sub arrays is also relatively easy using the castItems method
+
+```php
+$result = forecast([
+    'an-array' => [
+        ['attr' => '10'],
+        ['attr' => '100'],
+        ['attr' => '1000'],
+    ]
+])
+    ->castItems('an-array', 'anArray', function (Forecaster $forecaster) {
+        $forecaster->cast('attr', 'Attribute', 'int');
+    })
+    ->get();
+    
+// results to
+
+[
+    'anArray' => [
+        ['Attribute' => 10],
+        ['Attribute' => 100],
+        ['Attribute' => 1000],
+    ]
+]    
+```    
+
 ### Add your own fixed transformers
 
 You can apply your own transformers to the Forecaster class statically 

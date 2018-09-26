@@ -125,6 +125,33 @@ class Forecaster
     }
 
     /**
+     * @param string $field
+     * @param string $processedField
+     * @param callable $callback
+     * @param string|callable|null $class
+     * @return $this
+     * @throws ErrorException
+     */
+    public function castItems(string $field, string $processedField, callable $callback, $class = null)
+    {
+        $value = data_get($this->item, $field);
+
+        if (! is_array($value)) {
+            throw new ErrorException("Field [$field] does not provide an array");
+        }
+
+        Arr::set(
+            $this->processed,
+            $processedField,
+            collect($value)
+                ->forecast($callback, $class)
+                ->toArray()
+        );
+
+        return $this;
+    }
+
+    /**
      * @param mixed $condition
      * @param callable $callable
      * @return Forecaster
