@@ -35,7 +35,7 @@ $result = forecast([
 ])
     ->cast('a-string-int', 'anInt', 'int')
     ->cast('a-string-float', 'aFloat', 'float')
-    ->cast('an-int, 'aString', 'string')
+    ->cast('an-int', 'aString', 'string')
     ->cast('another-int', 'aBoolean', 'bool')
     ->cast('do-not-touch', 'doNotTouch')
     ->get();
