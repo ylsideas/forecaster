@@ -73,6 +73,41 @@ class ForecasterTest extends TestCase
         $this->assertArrayHasKey('output', $processed);
         $this->assertSame(10, $processed['output']);
     }
+
+    public function test_it_can_convert_items_in_an_array()
+    {
+        $processed = Forecaster::make([
+            'test' => [
+                ['item' => '10'],
+                ['item' => '100'],
+                ['item' => '1000'],
+            ]
+        ])
+            ->castItems('test', 'output', function (Forecaster $forecaster) {
+                $forecaster->cast('item', 'integer', 'int');
+            })
+            ->get();
+
+        $this->assertArrayHasKey('output', $processed);
+        $this->assertSame([
+            ['integer' => 10],
+            ['integer' => 100],
+            ['integer' => 1000],
+        ], $processed['output']);
+    }
+
+    public function test_it_throws_an_error_exception_convert_items_not_in_an_array()
+    {
+        $this->expectException(\ErrorException::class);
+
+        Forecaster::make([
+            'test' => 'value'
+        ])
+            ->castItems('test', 'output', function (Forecaster $forecaster) {
+                $forecaster->cast('item', 'integer', 'int');
+            })
+            ->get();
+    }
     
     public function test_it_can_register_custom_transformers()
     {
