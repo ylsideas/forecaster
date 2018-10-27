@@ -75,6 +75,36 @@ $result = forecast([
 ]               
 ```
 
+A nice piece of functionality is that it can cast all the values of an array using the
+castAll method. There is even the option to do this using wild cards.
+
+```php
+$result = forecast([
+    'anArrayOfStrings' => [
+        '10', '100', '1000'
+    ],
+    'anArrayOfArrays' => [
+        ['value' => '20'],
+        ['value' => '200'],
+        ['value' => '2000'],
+    ]
+])
+    ->castAll('anArrayOfStrings', 'an-array-of-ints')
+    ->castAll('anArrayOfArrays.*.value', 'an-array-of-all-values')
+    ->get();
+    
+// results to
+
+[
+    'an-array-of-ints' => [
+        10, 100, 1000
+    ],
+    'an-array-of-all-values' => [
+        20, 200, 2000
+    ],
+]               
+```
+
 You need not use just arrays, you may also use an object or a mix
 of objects and arrays with the same dot notation.
 

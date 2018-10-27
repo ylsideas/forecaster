@@ -61,6 +61,45 @@ class ForecasterTest extends TestCase
         ];
     }
 
+    public function test_it_can_convert_arrays()
+    {
+        $processed = Forecaster::make([
+            'test' => ['10', '100', '1000']
+        ])
+            ->castAll('test', 'output', 'int')
+            ->get();
+
+        $this->assertArrayHasKey('output', $processed);
+        $this->assertSame([10, 100, 1000], $processed['output']);
+    }
+
+    public function test_it_can_convert_values_across_arrays()
+    {
+        $processed = Forecaster::make([
+            'test' => [
+                ['value' => '10'],
+                ['value' => '100'],
+                ['value' => '1000'],
+            ]
+        ])
+            ->castAll('test.*.value', 'output', 'int')
+            ->get();
+
+        $this->assertArrayHasKey('output', $processed);
+        $this->assertSame([10, 100, 1000], $processed['output']);
+    }
+
+    public function test_it_throws_an_error_exception_if_cast_all_is_not_an_array()
+    {
+        $this->expectException(\ErrorException::class);
+
+        Forecaster::make([
+            'test' => 'value'
+        ])
+            ->castAll('test.*.value', 'output', 'int')
+            ->get();
+    }
+
     public function test_it_can_convert_objects()
     {
         $object = new \stdClass();
